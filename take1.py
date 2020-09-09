@@ -42,17 +42,7 @@ class window(Gtk.Window):
         #self.entry.set_text(" ")
         self.content.show()
 
-class Boxmodel(Gtk.Box):
-    def __init__(self, tag="div"):
-        if tag == "p":
-            self.content = Gtk.TextView()
-        elif tag == "a":
-            self.content = Gtk.LinkButton()
-        elif tag == "button":
-            self.content = Gtk.Button()
-        else: 
-            self.content = Gtk.Box()
-        self.add(self.content)
+
 
 #class domtree():
 
