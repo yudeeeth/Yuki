@@ -60,7 +60,6 @@ class note(Gtk.Notebook):
             self.pluspage()
         self.show_all()
 
-
     def delpage(self,button,page):
         self.remove(page)
         self.pages -= 1
@@ -70,14 +69,18 @@ class note(Gtk.Notebook):
         if self.pages == 0:
             Gtk.main_quit()
 
-
-
 class page(Gtk.Grid):
     def __init__(self):
         Gtk.Grid.__init__(self)
+        self.max = 0
+        self.pagesback = []
+        self.pagesnext = []
+        self.pageindex = -1
         self.topmenu = Gtk.Box()
         self.backbtn = Gtk.Button(label="<")
+        self.backbtn.connect("clicked",self.goback)
         self.nextbtn = Gtk.Button(label=">")
+        self.nextbtn.connect("clicked",self.gonext)
         self.refresh = Gtk.Button(label="H")
         self.bar = Gtk.SearchEntry()
         self.bar.connect("activate",self.handlepage)
@@ -94,14 +97,34 @@ class page(Gtk.Grid):
         self.attach(self.topmenu,0,0,1,1)
         self.attach(self.document,0,1,1,1)
 
-    def handlepage(self,bar):
-        self.website = req(self.bar.get_text())
         self.content = Gtk.TextView()
+        self.document.add(self.content)
+
+    def handlepage(self,bar):
+        self.pagesback.append(self.bar.get_text())
+        self.pageindex+=1
+        self.max=self.pageindex
+        self.website = req(self.bar.get_text())
         buff = self.content.get_buffer()
         buff.set_text(self.website)
-        self.document.add(self.content)
         self.show_all()
 
+    def goback(self,button):
+        if self.pageindex >0:
+            self.pageindex-=1
+            self.pagesnext.append(self.pagesback.pop())
+            self.website = req(self.pagesback[self.pageindex])
+            buff = self.content.get_buffer()
+            buff.set_text(self.website)
+            self.show_all()
+    def gonext(self,button):
+        if self.pageindex<self.max:
+            self.pageindex+=1
+            self.pagesback.append(self.pagesnext.pop())
+            self.website = req(self.pagesback[self.pageindex])
+            buff = self.content.get_buffer()
+            buff.set_text(self.website)
+            self.show_all()
 
 win = window()
 Gtk.main()
